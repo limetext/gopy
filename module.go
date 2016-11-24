@@ -10,17 +10,17 @@ package py
 // static inline void decref(PyObject *obj) { Py_DECREF(obj); }
 import "C"
 
-import (
-	"unsafe"
-)
+import "unsafe"
 
 type Module struct {
 	AbstractObject
-	o C.PyObject
+	o *C.PyObject
 }
 
+var moduleObjMap = make(map[*C.PyObject]*Module)
+
 // ModuleType is the Type object that represents the Module type.
-var ModuleType = (*Type)(unsafe.Pointer(C.getBasePyType(C.GoPyModule_Type)))
+var ModuleType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyModule_Type))))
 
 func moduleCheck(obj Object) bool {
 	if obj == nil {
@@ -30,7 +30,12 @@ func moduleCheck(obj Object) bool {
 }
 
 func newModule(obj *C.PyObject) *Module {
-	return (*Module)(unsafe.Pointer(obj))
+	if m, ok := moduleObjMap[obj]; ok {
+		return m
+	}
+	m := &Module{o: obj}
+	moduleObjMap[obj] = m
+	return m
 }
 
 func Import(name string) (*Module, error) {
