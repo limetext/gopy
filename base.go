@@ -21,17 +21,11 @@ type BaseObject struct {
 	o *C.PyObject
 }
 
-var baseObjMap = make(map[*C.PyObject]*BaseObject)
-
 // BaseType is the Type object that represents the BaseObject type.
 var BaseType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyBaseObject_Type))))
 
 func newBaseObject(obj *C.PyObject) *BaseObject {
-	if bo, ok := baseObjMap[obj]; ok {
-		return bo
-	}
 	bo := &BaseObject{o: obj}
-	baseObjMap[obj] = bo
 	return bo
 }
 
@@ -202,6 +196,9 @@ func (obj *BaseObject) CallObject(args *Tuple) (Object, error) {
 		a = c(args)
 	}
 	ret := C.PyObject_CallObject(c(obj), a)
+
+	defer args.Decref()
+
 	return obj2ObjErr(ret)
 }
 

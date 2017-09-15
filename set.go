@@ -24,8 +24,6 @@ type FrozenSet struct {
 	Set
 }
 
-var setObjMap = make(map[*C.PyObject]*Set)
-
 // SetType is the Type object that represents the Set type.
 var SetType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPySet_Type))))
 
@@ -41,11 +39,7 @@ func frozenSetCheck(obj Object) bool {
 }
 
 func newSet(obj *C.PyObject) *Set {
-	if s, ok := setObjMap[obj]; ok {
-		return s
-	}
 	s := &Set{o: (*C.PySetObject)(unsafe.Pointer(obj))}
-	setObjMap[obj] = s
 	return s
 }
 

@@ -22,8 +22,6 @@ type Type struct {
 	o *C.PyTypeObject
 }
 
-var typeObjMap = make(map[*C.PyObject]*Type)
-
 // TypeType is the Type object that represents the Type type.
 var TypeType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyType_Type))))
 
@@ -35,11 +33,7 @@ func typeCheck(obj Object) bool {
 }
 
 func newType(obj *C.PyObject) *Type {
-	if t, ok := typeObjMap[obj]; ok {
-		return t
-	}
 	t := &Type{o: (*C.PyTypeObject)(unsafe.Pointer(obj))}
-	typeObjMap[obj] = t
 	return t
 }
 

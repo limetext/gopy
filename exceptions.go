@@ -16,14 +16,8 @@ type ExceptionClass struct {
 	o *C.PyBaseExceptionObject
 }
 
-var exceptionObjMap = make(map[*C.PyObject]*ExceptionClass)
-
 func newException(obj *C.PyObject) *ExceptionClass {
-	if e, ok := exceptionObjMap[obj]; ok {
-		return e
-	}
 	e := &ExceptionClass{o: (*C.PyBaseExceptionObject)(unsafe.Pointer(obj))}
-	exceptionObjMap[obj] = e
 	return e
 }
 

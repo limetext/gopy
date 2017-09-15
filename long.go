@@ -19,8 +19,6 @@ type Long struct {
 	o *C.PyLongObject
 }
 
-var longObjMap = make(map[*C.PyObject]*Long)
-
 // LongType is the Type object that represents the Long type.
 var LongType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyLong_Type))))
 
@@ -32,11 +30,7 @@ func longCheck(obj Object) bool {
 }
 
 func newLong(obj *C.PyObject) *Long {
-	if l, ok := longObjMap[obj]; ok {
-		return l
-	}
 	l := &Long{o: (*C.PyLongObject)(unsafe.Pointer(obj))}
-	longObjMap[obj] = l
 	return l
 }
 

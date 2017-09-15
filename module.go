@@ -17,8 +17,6 @@ type Module struct {
 	o *C.PyObject
 }
 
-var moduleObjMap = make(map[*C.PyObject]*Module)
-
 // ModuleType is the Type object that represents the Module type.
 var ModuleType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyModule_Type))))
 
@@ -30,11 +28,7 @@ func moduleCheck(obj Object) bool {
 }
 
 func newModule(obj *C.PyObject) *Module {
-	if m, ok := moduleObjMap[obj]; ok {
-		return m
-	}
 	m := &Module{o: obj}
-	moduleObjMap[obj] = m
 	return m
 }
 
