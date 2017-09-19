@@ -194,10 +194,10 @@ func (obj *BaseObject) CallObject(args *Tuple) (Object, error) {
 	var a *C.PyObject = nil
 	if args != nil {
 		a = c(args)
+		defer args.Decref()
 	}
-	ret := C.PyObject_CallObject(c(obj), a)
 
-	defer args.Decref()
+	ret := C.PyObject_CallObject(c(obj), a)
 
 	return obj2ObjErr(ret)
 }
