@@ -1,4 +1,4 @@
 package py
 
-// #cgo pkg-config: python-3.5
+// #cgo pkg-config: python3
 import "C"
