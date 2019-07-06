@@ -17,13 +17,11 @@ import (
 
 type Tuple struct {
 	AbstractObject
-	o *C.PyTupleObject
+	o C.PyTupleObject
 }
 
-var tupleObjMap = make(map[*C.PyObject]*Tuple)
-
 // TupleType is the Type object that represents the Tuple type.
-var TupleType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyTuple_Type))))
+var TupleType = (*Type)(unsafe.Pointer(C.getBasePyType(C.GoPyTuple_Type)))
 
 func tupleCheck(obj Object) bool {
 	if obj == nil {
@@ -33,12 +31,7 @@ func tupleCheck(obj Object) bool {
 }
 
 func newTuple(obj *C.PyObject) *Tuple {
-	if t, ok := tupleObjMap[obj]; ok {
-		return t
-	}
-	t := &Tuple{o: (*C.PyTupleObject)(unsafe.Pointer(obj))}
-	tupleObjMap[obj] = t
-	return t
+	return (*Tuple)(unsafe.Pointer(obj))
 }
 
 // NewTuple returns a new *Tuple of the specified size.  However the entries are

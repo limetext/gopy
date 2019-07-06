@@ -19,13 +19,11 @@ import (
 // the PyDict_XXX functions from the Python C API.
 type Dict struct {
 	AbstractObject
-	o *C.PyDictObject
+	o C.PyDictObject
 }
 
-var dictObjMap = make(map[*C.PyObject]*Dict)
-
 // DictType is the Type object that represents the Dict type.
-var DictType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyDict_Type))))
+var DictType = (*Type)(unsafe.Pointer(C.getBasePyType(C.GoPyDict_Type)))
 
 func dictCheck(obj Object) bool {
 	if obj == nil {
@@ -35,12 +33,7 @@ func dictCheck(obj Object) bool {
 }
 
 func newDict(obj *C.PyObject) *Dict {
-	if di, ok := dictObjMap[obj]; ok {
-		return di
-	}
-	di := &Dict{o: (*C.PyDictObject)(unsafe.Pointer(obj))}
-	dictObjMap[obj] = di
-	return di
+	return (*Dict)(unsafe.Pointer(obj))
 }
 
 // NewDict creates a new empty dictionary.

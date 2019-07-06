@@ -12,25 +12,18 @@ import "unsafe"
 
 type Unicode struct {
 	AbstractObject
-	o *C.PyUnicodeObject
+	o C.PyUnicodeObject
 }
 
-var unicodeObjMap = make(map[*C.PyObject]*Unicode)
-
 // UnicodeType is the Type object that represents the Unicode type.
-var UnicodeType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyUnicode_Type))))
+var UnicodeType = (*Type)(unsafe.Pointer(C.getBasePyType(C.GoPyUnicode_Type)))
 
 func unicodeCheck(obj Object) bool {
 	return C.unicodeCheck(c(obj)) != 0
 }
 
 func newUnicode(obj *C.PyObject) *Unicode {
-	if u, ok := unicodeObjMap[obj]; ok {
-		return u
-	}
-	u := &Unicode{o: (*C.PyUnicodeObject)(unsafe.Pointer(obj))}
-	unicodeObjMap[obj] = u
-	return u
+	return (*Unicode)(unsafe.Pointer(obj))
 }
 
 func NewUnicode(s string) (*Unicode, error) {

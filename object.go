@@ -10,13 +10,9 @@ package py
 // static inline int exceptionCheck(PyObject *obj) {
 //     return PyExceptionClass_Check(obj);
 // }
-// static inline PyObject *mycgocheck(PyObject *obj) {
-//     return obj;
-// }
 import "C"
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 	"unsafe"
@@ -46,14 +42,12 @@ type Object interface {
 }
 
 // None is the Python equivalent to nil.
-var nonePtr = (*C.PyObject)(unsafe.Pointer(&C._Py_NoneStruct))
-var None = &NoneObject{o: nonePtr}
+var None = (*NoneObject)(unsafe.Pointer(&C._Py_NoneStruct))
 
 // NoneObject is the type of the None value.  The only value of this type is
 // None.
 type NoneObject struct {
 	AbstractObject
-	o *C.PyObject
 }
 
 func (n *NoneObject) String() string {
@@ -64,16 +58,7 @@ func c(obj Object) *C.PyObject {
 	if obj == nil {
 		return nil
 	}
-	b := obj.Base()
-	if b.o == nil {
-		panic(fmt.Sprintf("nil! %T", obj))
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			panic(fmt.Sprintf("Panic in c() for %T: %v", obj, r))
-		}
-	}()
-	return C.mycgocheck(obj.Base().o)
+	return (*C.PyObject)(unsafe.Pointer(obj.Base()))
 }
 
 func stringify(obj Object) string {
@@ -106,12 +91,8 @@ func getType(pyType *C.PyTypeObject) (*Class, bool) {
 }
 
 func obj2Class(c *Class, obj *C.PyObject) (Object, bool) {
-	// vp := reflect.NewAt(reflect.TypeOf(c.Pointer), unsafe.Pointer(&obj))
-	vp := reflect.New(reflect.TypeOf(c.Pointer).Elem())
-	o, ok := vp.Interface().(Object)
-	if ok {
-		o.Base().o = obj
-	}
+	vp := reflect.NewAt(reflect.TypeOf(c.Pointer), unsafe.Pointer(&obj))
+	o, ok := vp.Elem().Interface().(Object)
 	return o, ok
 }
 
@@ -120,12 +101,9 @@ func newObject(obj *C.PyObject) Object {
 		return nil
 	}
 
-	if obj == nonePtr {
+	o := unsafe.Pointer(obj)
+	if o == unsafe.Pointer(None) {
 		return None
-	}
-
-	if goobj, ok := goObjMap[obj]; ok {
-		return goobj
 	}
 
 	pyType := (*C.PyTypeObject)(obj.ob_type)
@@ -149,35 +127,35 @@ func newObject(obj *C.PyObject) Object {
 
 	switch C.getBaseGoPyType(obj) {
 	case C.GoPyList_Type:
-		return newList(obj)
+		return (*List)(o)
 	case C.GoPyTuple_Type:
-		return newTuple(obj)
+		return (*Tuple)(o)
 	case C.GoPyDict_Type:
-		return newDict(obj)
+		return (*Dict)(o)
 	case C.GoPyUnicode_Type:
-		return newUnicode(obj)
+		return (*Unicode)(o)
 	case C.GoPyBool_Type:
 		return newBool(obj)
 	case C.GoPyLong_Type:
-		return newLong(obj)
+		return (*Long)(o)
 	case C.GoPyFloat_Type:
-		return newFloat(obj)
+		return (*Float)(o)
 	case C.GoPyModule_Type:
-		return newModule(obj)
+		return (*Module)(o)
 	case C.GoPyType_Type:
-		return newType(obj)
+		return (*Type)(o)
 	case C.GoPyCode_Type:
-		return newCode(obj)
+		return (*Code)(o)
 	case C.GoPyCFunction_Type:
-		return newCFunction(obj)
+		return (*CFunction)(o)
 	case C.GoPyComplex_Type:
-		return newComplex(obj)
+		return (*Complex)(o)
 	case C.GoPyFrozenSet_Type:
-		return newFrozenSet(obj)
+		return (*FrozenSet)(o)
 	case C.GoPySet_Type:
-		return newSet(obj)
+		return (*Set)(o)
 	case C.GoPyFunction_Type:
-		return newFunction(obj)
+		return (*Function)(o)
 	}
 	if C.exceptionCheck(obj) != 0 {
 		return newException(obj)

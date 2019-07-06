@@ -18,21 +18,14 @@ import "unsafe"
 // accept any type of object to be defined as methods on *BaseObject.
 type BaseObject struct {
 	AbstractObject
-	o *C.PyObject
+	o C.PyObject
 }
 
-var baseObjMap = make(map[*C.PyObject]*BaseObject)
-
 // BaseType is the Type object that represents the BaseObject type.
-var BaseType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyBaseObject_Type))))
+var BaseType = (*Type)(unsafe.Pointer(C.getBasePyType(C.GoPyBaseObject_Type)))
 
 func newBaseObject(obj *C.PyObject) *BaseObject {
-	if bo, ok := baseObjMap[obj]; ok {
-		return bo
-	}
-	bo := &BaseObject{o: obj}
-	baseObjMap[obj] = bo
-	return bo
+	return (*BaseObject)(unsafe.Pointer(obj))
 }
 
 // HasAttr returns true if "obj" has the attribute "name".  This is equivalent

@@ -16,25 +16,18 @@ import (
 type Complex struct {
 	AbstractObject
 	NumberProtocol
-	o *C.PyComplexObject
+	o C.PyComplexObject
 }
 
-var complexObjMap = make(map[*C.PyObject]*Complex)
-
 // ComplexType is the Type object that represents the Complex type.
-var ComplexType = newType((*C.PyObject)(unsafe.Pointer(C.getBasePyType(C.GoPyComplex_Type))))
+var ComplexType = (*Type)(unsafe.Pointer(C.getBasePyType(C.GoPyComplex_Type)))
 
 func complexCheck(obj Object) bool {
 	return C.complexCheck(c(obj)) != 0
 }
 
 func newComplex(obj *C.PyObject) *Complex {
-	if c, ok := complexObjMap[obj]; ok {
-		return c
-	}
-	c := &Complex{o: (*C.PyComplexObject)(unsafe.Pointer(obj))}
-	complexObjMap[obj] = c
-	return c
+	return (*Complex)(unsafe.Pointer(obj))
 }
 
 func NewComplex(v complex128) (*Complex, error) {

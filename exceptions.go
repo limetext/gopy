@@ -13,18 +13,11 @@ import (
 
 type ExceptionClass struct {
 	AbstractObject
-	o *C.PyBaseExceptionObject
+	o C.PyBaseExceptionObject
 }
 
-var exceptionObjMap = make(map[*C.PyObject]*ExceptionClass)
-
 func newException(obj *C.PyObject) *ExceptionClass {
-	if e, ok := exceptionObjMap[obj]; ok {
-		return e
-	}
-	e := &ExceptionClass{o: (*C.PyBaseExceptionObject)(unsafe.Pointer(obj))}
-	exceptionObjMap[obj] = e
-	return e
+	return (*ExceptionClass)(unsafe.Pointer(obj))
 }
 
 // ErrV returns a new Error of the specified kind, and with the given value.
