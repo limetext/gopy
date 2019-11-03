@@ -28,9 +28,9 @@ func (g *GilState) Release() {
 	}
 }
 
-func AcquireGil() {
-	C.PyEval_AcquireLock()
-}
+// func AcquireGil() {
+// 	C.PyEval_AcquireLock()
+// }
 
 func ReleaseGil() {
 	C.PyEval_ReleaseLock()

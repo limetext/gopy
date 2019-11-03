@@ -118,13 +118,13 @@ func (mod *Module) Name() (string, error) {
 	return C.GoString(ret), nil
 }
 
-func (mod *Module) Filename() (string, error) {
-	ret := C.PyModule_GetFilename(c(mod))
-	if ret == nil {
-		return "", exception()
-	}
-	return C.GoString(ret), nil
-}
+// func (mod *Module) Filename() (string, error) {
+// 	ret := C.PyModule_GetFilename(c(mod))
+// 	if ret == nil {
+// 		return "", exception()
+// 	}
+// 	return C.GoString(ret), nil
+// }
 
 func (mod *Module) AddObject(name string, obj Object) error {
 	if obj == nil {
