@@ -1,4 +1,4 @@
-package py_test
+package gopy
 
 import (
 	"math/rand"
@@ -6,12 +6,10 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/limetext/gopy"
 )
 
 func test2() {
-	l := py.NewLock()
+	l := NewLock()
 	defer l.Unlock()
 }
 
@@ -19,7 +17,7 @@ func test(wg *sync.WaitGroup) {
 	t := time.Now()
 	for time.Since(t) < time.Second*2 {
 		func() {
-			l := py.NewLock()
+			l := NewLock()
 			defer l.Unlock()
 			test2()
 			time.Sleep(time.Duration(float64(time.Millisecond) * (1 + rand.Float64())))
@@ -29,11 +27,11 @@ func test(wg *sync.WaitGroup) {
 }
 
 func TestLock(t *testing.T) {
-	l := py.InitAndLock()
+	l := InitAndLock()
 	l.Unlock()
 	defer func() {
 		l.Lock()
-		py.Finalize()
+		Finalize()
 	}()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	var wg sync.WaitGroup

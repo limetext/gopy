@@ -1,6 +1,6 @@
 // +build darwin linux freebsd
 
-package py
+package gopy
 
 /*
 #include <signal.h>

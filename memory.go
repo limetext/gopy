@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package py
+package gopy
 
 // #include "utils.h"
 import "C"
 
 // This file is about as unsafe as you can get ... we are playing tricks on the
 // Go runtime in here. :(
-import "unsafe"
-
-import "sync"
+import (
+	"sync"
+	"unsafe"
+)
 
 // Some sizes that we need for various calculations
 const (

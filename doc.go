@@ -33,4 +33,4 @@ Currently it is not possible to write Python extensions in Go, as there is no
 support for producing Go shared libraries in the gc compiler suite, and no
 support for using shared libraries in the gccgo Go runtime.
 */
-package py
+package gopy

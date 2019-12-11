@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package py
+package gopy
 
 // #include "utils.h"
 // static inline int boolCheck(PyObject *o) { return PyBool_Check(o); }

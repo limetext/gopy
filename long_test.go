@@ -1,16 +1,12 @@
-package py_test
+package gopy
 
-import (
-	"testing"
-
-	"github.com/limetext/gopy"
-)
+import "testing"
 
 func TestLong(t *testing.T) {
-	py.Initialize()
-	defer py.Finalize()
-	l := py.NewLong(10)
-	d, err := py.NewDict()
+	Initialize()
+	defer Finalize()
+	l := NewLong(10)
+	d, err := NewDict()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -20,7 +16,7 @@ func TestLong(t *testing.T) {
 	if l2, err := d.GetItemString("gopy.count"); err != nil {
 		t.Fatal(err)
 	} else {
-		if l3, ok := l2.(*py.Long); !ok {
+		if l3, ok := l2.(*Long); !ok {
 			t.Fatalf("Unable to cast to long")
 		} else {
 			if v := l3.Int64(); v != 10 {
